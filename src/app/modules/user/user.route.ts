@@ -7,10 +7,12 @@ import {
 import { UserController } from "./user.controller";
 import { FileUploader } from "../../helper/fileUploader";
 import { UserValidation } from "./user.validation";
+import { auth } from "../../middlewares/auth";
+import { UserRole } from "../../../../generated/prisma";
 
 const router = Router();
 
-router.get("/", UserController.getAllUsers);
+router.get("/", auth(UserRole.ADMIN), UserController.getAllUsers);
 
 router.post(
   "/create-patient",

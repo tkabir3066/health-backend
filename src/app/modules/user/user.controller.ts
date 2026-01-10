@@ -3,6 +3,8 @@ import { catchAsync } from "../../shared/catchAsync";
 import { sendResponse } from "../../shared/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import { UserService } from "./user.service";
+import { userFilterableFields } from "./user.constant";
+import pick from "../../helper/pick";
 
 const createPatient = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -44,9 +46,10 @@ const createDoctor = catchAsync(
 );
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { limit, page, searchTerm, sortBy, sortOrder, role, status } =
+    /*     const { limit, page, searchTerm, sortBy, sortOrder, role, status } =
       req.query;
-    const result = await UserService.getAllUsers({
+
+       const result = await UserService.getAllUsers({
       page: Number(page),
       limit: Number(limit),
       searchTerm,
@@ -54,13 +57,18 @@ const getAllUsers = catchAsync(
       sortOrder,
       role,
       status,
-    });
+    }); */
+    const filters = pick(req.query, userFilterableFields); ////searching, filtering
 
+    const options = pick(req.query, ["page", "limit", "sortOrder", "sortBy"]); //pagination, sorting
+
+    const result = await UserService.getAllUsers(filters, options);
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
       message: "All users retrieved successfully",
-      data: result,
+      meta: result.meta,
+      data: result.data,
     });
   }
 );
