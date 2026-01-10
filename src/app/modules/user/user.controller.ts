@@ -17,6 +17,57 @@ const createPatient = catchAsync(
   }
 );
 
+const createAdmin = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await UserService.createAdmin(req);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.CREATED,
+      message: "Admin created successfully",
+      data: result,
+    });
+  }
+);
+
+const createDoctor = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await UserService.createDoctor(req);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.CREATED,
+      message: "Doctor created successfully",
+      data: result,
+    });
+  }
+);
+const getAllUsers = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { limit, page, searchTerm, sortBy, sortOrder, role, status } =
+      req.query;
+    const result = await UserService.getAllUsers({
+      page: Number(page),
+      limit: Number(limit),
+      searchTerm,
+      sortBy,
+      sortOrder,
+      role,
+      status,
+    });
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "All users retrieved successfully",
+      data: result,
+    });
+  }
+);
+
 export const UserController = {
   createPatient,
+  createAdmin,
+  createDoctor,
+  getAllUsers,
 };
