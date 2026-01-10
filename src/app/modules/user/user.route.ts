@@ -10,6 +10,8 @@ import { UserValidation } from "./user.validation";
 
 const router = Router();
 
+router.get("/", UserController.getAllUsers);
+
 router.post(
   "/create-patient",
   FileUploader.upload.single("file"),
@@ -19,6 +21,29 @@ router.post(
     );
 
     return UserController.createPatient(req, res, next);
+  }
+);
+
+router.post(
+  "/create-admin",
+  FileUploader.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = UserValidation.createAdminValidationSchema.parse(
+      JSON.parse(req.body.data)
+    );
+
+    return UserController.createAdmin(req, res, next);
+  }
+);
+router.post(
+  "/create-doctor",
+  FileUploader.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = UserValidation.createDoctorValidationSchema.parse(
+      JSON.parse(req.body.data)
+    );
+
+    return UserController.createDoctor(req, res, next);
   }
 );
 

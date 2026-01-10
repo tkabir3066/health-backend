@@ -25,7 +25,7 @@ const login = catchAsync(
 
     sendResponse(res, {
       success: true,
-      statusCode: StatusCodes.CREATED,
+      statusCode: StatusCodes.OK,
       message: "User logged in successfully",
       data: {
         needPasswordChange,
