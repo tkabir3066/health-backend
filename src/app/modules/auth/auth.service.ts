@@ -3,7 +3,7 @@ import { prisma } from "../../../lib/prisma";
 import bcryptjs from "bcryptjs";
 import jwt, { type JwtPayload, type SignOptions } from "jsonwebtoken";
 import { envVars } from "../../config/env";
-import { generateToken } from "../../helper/jwtHelper";
+import { JwtHelper } from "../../helper/jwtHelper";
 
 const login = async (payload: { email: string; password: string }) => {
   console.log(payload);
@@ -33,12 +33,12 @@ const login = async (payload: { email: string; password: string }) => {
     role: user.role,
   };
 
-  const accessToken = generateToken(
+  const accessToken = JwtHelper.generateToken(
     jwtPayload,
     envVars.JWT.ACCESS_TOKEN_SECRETS,
     envVars.JWT.ACCESS_TOKEN_EXPIRES
   );
-  const refreshToken = generateToken(
+  const refreshToken = JwtHelper.generateToken(
     jwtPayload,
     envVars.JWT.REFRESH_TOKEN_SECRETS,
     envVars.JWT.REFRESH_TOKEN_EXPIRES
