@@ -4,6 +4,8 @@ import bcryptjs from "bcryptjs";
 import jwt, { type JwtPayload, type SignOptions } from "jsonwebtoken";
 import { envVars } from "../../config/env";
 import { JwtHelper } from "../../helper/jwtHelper";
+import ApiError from "../../errors/ApiError";
+import { StatusCodes } from "http-status-codes";
 
 const login = async (payload: { email: string; password: string }) => {
   console.log(payload);
@@ -16,7 +18,7 @@ const login = async (payload: { email: string; password: string }) => {
   });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
   }
 
   const isPasswordCorrect = await bcryptjs.compare(
@@ -25,7 +27,7 @@ const login = async (payload: { email: string; password: string }) => {
   );
 
   if (!isPasswordCorrect) {
-    throw new Error("Invalid credentials");
+    throw new ApiError(StatusCodes.BAD_REQUEST, "Invalid credentials");
   }
 
   const jwtPayload = {
