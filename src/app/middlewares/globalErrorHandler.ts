@@ -28,6 +28,10 @@ const globalErrorHandler = (
       message = "Foreign key constraint failed on";
       error = err.meta;
     }
+    if (err.code === "2025") {
+      message = `"The value  stored in the database for the field is invalid for the field's type"`;
+      error = err.meta;
+    }
   } else if (err instanceof Prisma.PrismaClientValidationError) {
     message = "Validation Error";
     error = err.message;

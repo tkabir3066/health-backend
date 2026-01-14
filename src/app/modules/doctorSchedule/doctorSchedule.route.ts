@@ -7,6 +7,12 @@ import { DoctorScheduleValidation } from "./doctorSchedule.validation";
 
 const router = Router();
 
+router.get(
+  "/",
+  auth(UserRole.DOCTOR),
+  DoctorScheduleController.getDoctorSchedule
+);
+
 router.post(
   "/",
   auth(UserRole.DOCTOR),
