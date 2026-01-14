@@ -11,5 +11,5 @@ router.get(
   ScheduleController.schedulesForDoctor
 );
 router.post("/", auth(UserRole.ADMIN), ScheduleController.createSchedule);
-router.delete("/:id", ScheduleController.deleteScheduleFromDB);
+router.delete("/", ScheduleController.deleteScheduleFromDB);
 export const ScheduleRoutes = router;

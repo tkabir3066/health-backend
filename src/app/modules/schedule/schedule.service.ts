@@ -116,7 +116,7 @@ const schedulesForDoctor = async (
     where: {
       ...whereConditions,
       id: {
-        in: doctorScheduleIds,
+        notIn: doctorScheduleIds,
       },
     },
     orderBy: {
@@ -128,7 +128,7 @@ const schedulesForDoctor = async (
     where: {
       ...whereConditions,
       id: {
-        in: doctorScheduleIds,
+        notIn: doctorScheduleIds,
       },
     },
   });
@@ -144,11 +144,7 @@ const schedulesForDoctor = async (
 };
 
 const deleteScheduleFromDB = async (id: string) => {
-  const result = await prisma.schedule.delete({
-    where: {
-      id,
-    },
-  });
+  const result = await prisma.schedule.deleteMany();
 
   return result;
 };

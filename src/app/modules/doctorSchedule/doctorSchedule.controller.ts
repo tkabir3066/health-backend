@@ -25,7 +25,24 @@ const createDoctorSchedule = catchAsync(
     });
   }
 );
+const getDoctorSchedule = catchAsync(
+  async (
+    req: Request & { user?: IJwtPayload },
+    res: Response,
+    next: NextFunction
+  ) => {
+    const user = req.user;
+    const result = await DoctorScheduleService.getDoctorSchedule();
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Doctor schedule retrieved successfully",
+      data: result,
+    });
+  }
+);
 
 export const DoctorScheduleController = {
   createDoctorSchedule,
+  getDoctorSchedule,
 };

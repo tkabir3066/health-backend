@@ -1,3 +1,4 @@
+import { get } from "http";
 import { prisma } from "../../../lib/prisma";
 import type { IJwtPayload } from "../../types/common";
 
@@ -23,6 +24,12 @@ const createDoctorSchedule = async (
   return result;
 };
 
+const getDoctorSchedule = async () => {
+  const result = await prisma.doctorSchedule.findMany();
+
+  return result;
+};
 export const DoctorScheduleService = {
   createDoctorSchedule,
+  getDoctorSchedule,
 };
