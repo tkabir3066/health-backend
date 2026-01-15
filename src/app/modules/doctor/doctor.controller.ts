@@ -5,6 +5,7 @@ import { DoctorService } from "./doctor.service";
 import { sendResponse } from "../../shared/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import { doctorFilterableFields } from "./doctor.constant";
+import { get } from "node:http";
 
 const getAllDoctors = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -17,6 +18,17 @@ const getAllDoctors = catchAsync(
       message: "Doctors retrieved successfully",
       meta: result.meta,
       data: result.data,
+    });
+  }
+);
+const getAISuggestions = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await DoctorService.getAISuggestions(req.body);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "AI Suggestions retrieved successfully",
+      data: result,
     });
   }
 );
@@ -37,4 +49,5 @@ const updateDoctor = catchAsync(
 export const DoctorController = {
   getAllDoctors,
   updateDoctor,
+  getAISuggestions,
 };

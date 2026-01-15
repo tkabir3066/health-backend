@@ -1,4 +1,3 @@
-import { get } from "http";
 import { prisma } from "../../../lib/prisma";
 import type { IJwtPayload } from "../../types/common";
 

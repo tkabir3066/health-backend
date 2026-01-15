@@ -1,8 +1,12 @@
+import { StatusCodes } from "http-status-codes";
 import type { Doctor, Prisma } from "../../../../generated/prisma";
 import { prisma } from "../../../lib/prisma";
+import ApiError from "../../errors/ApiError";
 import { PaginationHelper, type IOptions } from "../../helper/paginationHelper";
 import { doctorSearchableFields } from "./doctor.constant";
 import type { IDoctorUpdateInput } from "./doctor.interface";
+import { openai } from "../../helper/openRouter";
+import { extractDoctorInfo } from "../../helper/extractDoctorInfo";
 
 const getAllDoctors = async (filters: any, options: IOptions) => {
   const { page, limit, skip, sortBy, sortOrder } =
@@ -132,7 +136,68 @@ const updateDoctor = async (
 
   return result;
 };
+
+//AI Doctor Sugestions
+
+const getAISuggestions = async (payload: { symptoms: string }) => {
+  if (!(payload && payload.symptoms)) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "Symptoms are required");
+  }
+
+  const doctors = await prisma.doctor.findMany({
+    where: {
+      isDeleted: false,
+    },
+    include: {
+      doctorSpecialties: {
+        include: {
+          specialties: true,
+        },
+      },
+    },
+  });
+
+  console.log("doctors data loaded.......\n");
+  const prompt = `
+You are a medical assistant AI. Based on the patient's symptoms, suggest the top 3 most suitable doctors.
+Each doctor has specialties and years of experience.
+Only suggest doctors who are relevant to the given symptoms.
+
+Symptoms: ${payload.symptoms}
+
+Here is the doctor list (in JSON):
+${JSON.stringify(doctors, null, 2)}
+
+Return your response in JSON format with full individual doctor data. 
+`;
+
+  console.log("analyzing......\n");
+
+  const completion = await openai.chat.completions.create({
+    model: "z-ai/glm-4.5-air:free",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are a helpful AI medical assistant that provides doctor suggestions.",
+      },
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+  });
+
+  if (completion.choices[0]) {
+    const messageContent = completion.choices[0].message.content;
+    if (messageContent) {
+      const result = await extractDoctorInfo(messageContent);
+      return result;
+    }
+  }
+};
 export const DoctorService = {
   getAllDoctors,
   updateDoctor,
+  getAISuggestions,
 };
