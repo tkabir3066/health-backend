@@ -19,17 +19,17 @@ const globalErrorHandler = (
       error = err.meta;
       statusCode = StatusCodes.CONFLICT;
     }
-    if (err.code === "1000") {
+    if (err.code === "P1000") {
       message = "Authentication failed against database server";
       error = err.meta;
       statusCode = StatusCodes.BAD_GATEWAY;
     }
-    if (err.code === "2003") {
+    if (err.code === "P2003") {
       message = "Foreign key constraint failed on";
       error = err.meta;
     }
-    if (err.code === "2025") {
-      message = `"The value  stored in the database for the field is invalid for the field's type"`;
+    if (err.code === "P2025") {
+      message = "No record was found for a query";
       error = err.meta;
     }
   } else if (err instanceof Prisma.PrismaClientValidationError) {
