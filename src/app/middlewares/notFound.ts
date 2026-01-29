@@ -1,22 +1,15 @@
 import type { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
-const globalErrorHandler = (
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  let statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-  let success = false;
-  let message = err.message || "Something went wrong!";
-  let error = err;
-
-  res.status(statusCode).json({
-    success,
-    message,
-    error,
+const notFound = (req: Request, res: Response, next: NextFunction) => {
+  res.status(StatusCodes.NOT_FOUND).json({
+    success: false,
+    message: "API NOT FOUND!",
+    error: {
+      path: req.originalUrl,
+      message: "Your requested path is not found!",
+    },
   });
 };
 
-export default globalErrorHandler;
+export default notFound;
