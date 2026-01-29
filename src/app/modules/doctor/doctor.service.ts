@@ -82,6 +82,29 @@ const getAllDoctors = async (filters: any, options: IOptions) => {
   };
 };
 
+//get doctor by Id
+const getDoctorById = async (id: string) => {
+  const result = await prisma.doctor.findUniqueOrThrow({
+    where: {
+      id,
+    },
+    include: {
+      doctorSpecialties: {
+        include: {
+          specialties: true,
+        },
+      },
+      doctorSchedules: {
+        include: {
+          schedule: true,
+        },
+      },
+    },
+  });
+
+  return result;
+};
+
 const updateDoctor = async (
   id: string,
   payload: Partial<IDoctorUpdateInput>
@@ -200,4 +223,5 @@ export const DoctorService = {
   getAllDoctors,
   updateDoctor,
   getAISuggestions,
+  getDoctorById,
 };

@@ -15,9 +15,21 @@ const getAllDoctors = catchAsync(
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
-      message: "Doctors retrieved successfully",
+      message: "All Doctors retrieved successfully",
       meta: result.meta,
       data: result.data,
+    });
+  }
+);
+const getDoctorById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id as string;
+    const result = await DoctorService.getDoctorById(id);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Doctor retrieved successfully",
+      data: result,
     });
   }
 );
@@ -50,4 +62,5 @@ export const DoctorController = {
   getAllDoctors,
   updateDoctor,
   getAISuggestions,
+  getDoctorById,
 };

@@ -8,8 +8,6 @@ import ApiError from "../../errors/ApiError";
 import { StatusCodes } from "http-status-codes";
 
 const login = async (payload: { email: string; password: string }) => {
-  console.log(payload);
-
   const user = await prisma.user.findUniqueOrThrow({
     where: {
       email: payload.email,
