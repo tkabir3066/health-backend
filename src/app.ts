@@ -9,14 +9,22 @@ import cookieParser from "cookie-parser";
 import { envVars } from "./app/config/env";
 import { router } from "./app/routes";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
+import { PaymentController } from "./app/modules/payment/payment.controller";
+import notFound from "./app/middlewares/notFound";
 
 const app: Application = express();
+
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  PaymentController.handleStripeWebhookEvent,
+);
 
 app.use(
   cors({
     origin: "http://localhost:3000",
     credentials: true,
-  })
+  }),
 );
 
 //parser
@@ -35,6 +43,6 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use(globalErrorHandler);
 
-// app.use(notFound);
+app.use(notFound);
 
 export default app;
