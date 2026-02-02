@@ -9,17 +9,28 @@ const router = Router();
 
 router.get(
   "/",
+  auth(UserRole.DOCTOR, UserRole.ADMIN, UserRole.PATIENT),
+  DoctorScheduleController.getAllDoctorSchedulesFromDB,
+);
+router.get(
+  "/my-schedule",
   auth(UserRole.DOCTOR),
-  DoctorScheduleController.getDoctorSchedule
+  DoctorScheduleController.getMySchedule,
 );
 
 router.post(
   "/",
   auth(UserRole.DOCTOR),
   validateRequest(
-    DoctorScheduleValidation.createDoctorScheduleValidationSchema
+    DoctorScheduleValidation.createDoctorScheduleValidationSchema,
   ),
-  DoctorScheduleController.createDoctorSchedule
+  DoctorScheduleController.createDoctorSchedule,
+);
+
+router.delete(
+  "/:id",
+  auth(UserRole.DOCTOR),
+  DoctorScheduleController.deleteFromDB,
 );
 
 export const DoctorScheduleRoutes = router;

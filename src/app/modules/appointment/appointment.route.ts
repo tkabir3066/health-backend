@@ -6,14 +6,14 @@ import { AppointmentController } from "./appointment.controller";
 const router = Router();
 
 router.get(
-  "/my-appointments",
-  auth(UserRole.PATIENT, UserRole.DOCTOR),
-  AppointmentController.getMyAppointment,
-);
-router.get(
   "/",
   auth(UserRole.ADMIN),
   AppointmentController.getAllAppointmentsFromDB,
+);
+router.get(
+  "/my-appointments",
+  auth(UserRole.PATIENT, UserRole.DOCTOR),
+  AppointmentController.getMyAppointment,
 );
 
 router.post(

@@ -5,6 +5,7 @@ import { StatusCodes } from "http-status-codes";
 import { AppointmentService } from "./appointment.service";
 import type { IJwtPayload } from "../../types/common";
 import pick from "../../helper/pick";
+import { appointmentFilterableFields } from "./appointment.constant";
 
 const createAppointment = catchAsync(
   async (
@@ -56,7 +57,7 @@ const getAllAppointmentsFromDB = catchAsync(
     res: Response,
     next: NextFunction,
   ) => {
-    const filters = pick(req.query, ["status", "paymentStatus"]); ////searching, filtering
+    const filters = pick(req.query, appointmentFilterableFields); ////searching, filtering
 
     const options = pick(req.query, ["page", "limit", "sortOrder", "sortBy"]); //
     const user = req.user;
