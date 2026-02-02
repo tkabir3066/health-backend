@@ -13,17 +13,22 @@ import { UserRole } from "../../../../generated/prisma";
 const router = Router();
 
 router.get("/", auth(UserRole.ADMIN), UserController.getAllUsers);
+router.get(
+  "/me",
+  auth(UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT),
+  UserController.getMyProfile,
+);
 
 router.post(
   "/create-patient",
   FileUploader.upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = UserValidation.createPatientValidationSchema.parse(
-      JSON.parse(req.body.data)
+      JSON.parse(req.body.data),
     );
 
     return UserController.createPatient(req, res, next);
-  }
+  },
 );
 
 router.post(
@@ -32,11 +37,11 @@ router.post(
   FileUploader.upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = UserValidation.createAdminValidationSchema.parse(
-      JSON.parse(req.body.data)
+      JSON.parse(req.body.data),
     );
 
     return UserController.createAdmin(req, res, next);
-  }
+  },
 );
 router.post(
   "/create-doctor",
@@ -44,11 +49,17 @@ router.post(
   FileUploader.upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = UserValidation.createDoctorValidationSchema.parse(
-      JSON.parse(req.body.data)
+      JSON.parse(req.body.data),
     );
 
     return UserController.createDoctor(req, res, next);
-  }
+  },
+);
+
+router.patch(
+  "/:id/status",
+  auth(UserRole.ADMIN),
+  UserController.changeProfileStatus,
 );
 
 export const UserRoutes = router;

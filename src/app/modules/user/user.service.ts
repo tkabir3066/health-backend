@@ -3,9 +3,10 @@ import { FileUploader } from "../../helper/fileUploader";
 import bcryptjs from "bcryptjs";
 import { envVars } from "../../config/env";
 import { prisma } from "../../../lib/prisma";
-import { Prisma, UserRole } from "../../../../generated/prisma";
+import { Prisma, UserRole, UserStatus } from "../../../../generated/prisma";
 import { PaginationHelper } from "../../helper/paginationHelper";
 import { userSearchableFields } from "./user.constant";
+import type { IJwtPayload } from "../../types/common";
 
 const createPatient = async (req: Request) => {
   if (req.file) {
@@ -17,7 +18,7 @@ const createPatient = async (req: Request) => {
 
   const hashedPassword = await bcryptjs.hash(
     req.body.password,
-    Number(envVars.BCRYPT_SALT_ROUNDS)
+    Number(envVars.BCRYPT_SALT_ROUNDS),
   );
 
   const result = await prisma.$transaction(async (tnx) => {
@@ -43,7 +44,7 @@ const createAdmin = async (req: Request) => {
   }
   const hashedPassword = await bcryptjs.hash(
     req.body.password,
-    Number(envVars.BCRYPT_SALT_ROUNDS)
+    Number(envVars.BCRYPT_SALT_ROUNDS),
   );
 
   const result = await prisma.$transaction(async (tnx) => {
@@ -72,7 +73,7 @@ const createDoctor = async (req: Request) => {
   }
   const hashedPassword = await bcryptjs.hash(
     req.body.password,
-    Number(envVars.BCRYPT_SALT_ROUNDS)
+    Number(envVars.BCRYPT_SALT_ROUNDS),
   );
 
   const result = await prisma.$transaction(async (tnx) => {
@@ -191,9 +192,73 @@ const getAllUsers = async (filters: any, options: any) => {
     data: result,
   };
 };
+
+const getMyProfile = async (user: IJwtPayload) => {
+  const userInfo = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: user.email,
+      status: UserStatus.ACTIVE,
+    },
+    select: {
+      id: true,
+      email: true,
+      needPasswordChange: true,
+      role: true,
+      status: true,
+    },
+  });
+
+  let profileData;
+  if (userInfo.role === UserRole.PATIENT) {
+    profileData = await prisma.patient.findUnique({
+      where: {
+        email: userInfo.email,
+      },
+    });
+  } else if (userInfo.role === UserRole.DOCTOR) {
+    profileData = await prisma.doctor.findUnique({
+      where: {
+        email: userInfo.email,
+      },
+    });
+  } else if (userInfo.role === UserRole.ADMIN) {
+    profileData = await prisma.admin.findUnique({
+      where: {
+        email: userInfo.email,
+      },
+    });
+  }
+
+  return {
+    ...userInfo,
+    ...profileData,
+  };
+};
+
+const changeProfileStatus = async (
+  id: string,
+  payload: { status: UserStatus },
+) => {
+  const userData = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: id,
+    },
+  });
+
+  const updatedStatus = await prisma.user.update({
+    where: {
+      id: userData.id,
+    },
+    data: payload,
+  });
+
+  return updatedStatus;
+};
 export const UserService = {
   createPatient,
   createAdmin,
   createDoctor,
   getAllUsers,
+  getMyProfile,
+  changeProfileStatus,
 };
