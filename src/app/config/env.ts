@@ -17,10 +17,20 @@ interface EnvConfig {
     ACCESS_TOKEN_EXPIRES: string;
     REFRESH_TOKEN_SECRETS: string;
     REFRESH_TOKEN_EXPIRES: string;
+    RESET_PASSWORD_TOKEN_SECRET: string;
+    RESET_PASSWORD_TOKEN_EXPIRE_IN: string;
   };
+  FRONTEND_URL: string;
   OPENROUTER_API_KEY: string;
   STRIPE_SECRET_KEY: string;
   STRIPE_WEBHOOK_SECRET: string;
+  EMAIL_SENDER: {
+    SMTP_HOST: string;
+    SMTP_PORT: string;
+    SMTP_USER: string;
+    SMTP_PASS: string;
+    SMTP_FROM: string;
+  };
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -36,9 +46,17 @@ const loadEnvVariables = (): EnvConfig => {
     "ACCESS_TOKEN_EXPIRES",
     "REFRESH_TOKEN_SECRETS",
     "REFRESH_TOKEN_EXPIRES",
+    "RESET_PASSWORD_TOKEN_SECRET",
+    "RESET_PASSWORD_TOKEN_EXPIRE_IN",
     "OPENROUTER_API_KEY",
     "STRIPE_SECRET_KEY",
     "STRIPE_WEBHOOK_SECRET",
+    "FRONTEND_URL",
+    "SMTP_HOST",
+    "SMTP_PORT",
+    "SMTP_USER",
+    "SMTP_PASS",
+    "SMTP_FROM",
   ];
 
   requiredEnvVariables.forEach((key) => {
@@ -62,10 +80,23 @@ const loadEnvVariables = (): EnvConfig => {
       ACCESS_TOKEN_EXPIRES: process.env.ACCESS_TOKEN_EXPIRES as string,
       REFRESH_TOKEN_SECRETS: process.env.REFRESH_TOKEN_SECRETS as string,
       REFRESH_TOKEN_EXPIRES: process.env.REFRESH_TOKEN_EXPIRES as string,
+      RESET_PASSWORD_TOKEN_SECRET: process.env
+        .RESET_PASSWORD_TOKEN_SECRET as string,
+      RESET_PASSWORD_TOKEN_EXPIRE_IN: process.env
+        .RESET_PASSWORD_TOKEN_EXPIRE_IN as string,
     },
+
+    FRONTEND_URL: process.env.FRONTEND_URL as string,
     OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY as string,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET as string,
+    EMAIL_SENDER: {
+      SMTP_HOST: process.env.SMTP_HOST as string,
+      SMTP_PORT: process.env.SMTP_PORT as string,
+      SMTP_USER: process.env.SMTP_USER as string,
+      SMTP_PASS: process.env.SMTP_PASS as string,
+      SMTP_FROM: process.env.SMTP_FROM as string,
+    },
   };
 };
 export const envVars = loadEnvVariables();

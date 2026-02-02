@@ -5,6 +5,7 @@ import { StatusCodes } from "http-status-codes";
 import { UserService } from "./user.service";
 import { userFilterableFields } from "./user.constant";
 import pick from "../../helper/pick";
+import type { IJwtPayload } from "../../types/common";
 
 const createPatient = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -16,7 +17,7 @@ const createPatient = catchAsync(
       message: "Patient created successfully",
       data: result,
     });
-  }
+  },
 );
 
 const createAdmin = catchAsync(
@@ -29,7 +30,7 @@ const createAdmin = catchAsync(
       message: "Admin created successfully",
       data: result,
     });
-  }
+  },
 );
 
 const createDoctor = catchAsync(
@@ -42,7 +43,7 @@ const createDoctor = catchAsync(
       message: "Doctor created successfully",
       data: result,
     });
-  }
+  },
 );
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -70,7 +71,44 @@ const getAllUsers = catchAsync(
       meta: result.meta,
       data: result.data,
     });
-  }
+  },
+);
+const getMyProfile = catchAsync(
+  async (
+    req: Request & { user?: IJwtPayload },
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const user = req.user;
+
+    const result = await UserService.getMyProfile(user as IJwtPayload);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "All users retrieved successfully",
+      data: result,
+    });
+  },
+);
+const changeProfileStatus = catchAsync(
+  async (
+    req: Request & { user?: IJwtPayload },
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const { id } = req.params;
+
+    const result = await UserService.changeProfileStatus(
+      id as string,
+      req.body,
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "User Status updated successfully",
+      data: result,
+    });
+  },
 );
 
 export const UserController = {
@@ -78,4 +116,6 @@ export const UserController = {
   createAdmin,
   createDoctor,
   getAllUsers,
+  getMyProfile,
+  changeProfileStatus,
 };
