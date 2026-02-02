@@ -47,7 +47,8 @@ const getMyAppointment = catchAsync(
       success: true,
       statusCode: StatusCodes.CREATED,
       message: "Appointment fetched successfully!",
-      data: result,
+      meta: result.meta,
+      data: result.data,
     });
   },
 );
@@ -71,7 +72,8 @@ const getAllAppointmentsFromDB = catchAsync(
       success: true,
       statusCode: StatusCodes.OK,
       message: "All Appointments fetched successfully!",
-      data: result,
+      meta: result.meta,
+      data: result.data,
     });
   },
 );

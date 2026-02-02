@@ -43,7 +43,8 @@ const getAllDoctorSchedulesFromDB = catchAsync(
       success: true,
       statusCode: StatusCodes.OK,
       message: "Doctor schedules retrieved successfully",
-      data: result,
+      meta: result.meta,
+      data: result.data,
     });
   },
 );
@@ -66,7 +67,8 @@ const getMySchedule = catchAsync(
       success: true,
       statusCode: StatusCodes.OK,
       message: "My schedule retrieved successfully",
-      data: result,
+      meta: result.meta,
+      data: result.data,
     });
   },
 );
