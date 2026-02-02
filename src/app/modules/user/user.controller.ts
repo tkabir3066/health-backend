@@ -110,6 +110,23 @@ const changeProfileStatus = catchAsync(
     });
   },
 );
+const updateMyProfile = catchAsync(
+  async (
+    req: Request & { user?: IJwtPayload },
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const user = req.user;
+
+    const result = await UserService.updateMyProfile(user as IJwtPayload, req);
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "User Status updated successfully",
+      data: result,
+    });
+  },
+);
 
 export const UserController = {
   createPatient,
@@ -118,4 +135,5 @@ export const UserController = {
   getAllUsers,
   getMyProfile,
   changeProfileStatus,
+  updateMyProfile,
 };

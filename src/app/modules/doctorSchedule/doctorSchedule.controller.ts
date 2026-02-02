@@ -5,17 +5,19 @@ import { sendResponse } from "../../shared/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import { DoctorScheduleService } from "./doctorSchedule.service";
 import type { IJwtPayload } from "../../types/common";
+import pick from "../../helper/pick";
+import { scheduleFilterableFields } from "./doctorSchedule.constant";
 
 const createDoctorSchedule = catchAsync(
   async (
     req: Request & { user?: IJwtPayload },
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     const user = req.user;
     const result = await DoctorScheduleService.createDoctorSchedule(
       user as IJwtPayload,
-      req.body
+      req.body,
     );
     sendResponse(res, {
       success: true,
@@ -23,26 +25,77 @@ const createDoctorSchedule = catchAsync(
       message: "Doctor schedule created successfully",
       data: result,
     });
-  }
+  },
 );
-const getDoctorSchedule = catchAsync(
+const getAllDoctorSchedulesFromDB = catchAsync(
   async (
     req: Request & { user?: IJwtPayload },
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
-    const user = req.user;
-    const result = await DoctorScheduleService.getDoctorSchedule();
+    const filters = pick(req.query, scheduleFilterableFields);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = await DoctorScheduleService.getAllDoctorSchedulesFromDB(
+      filters,
+      options,
+    );
     sendResponse(res, {
       success: true,
       statusCode: StatusCodes.OK,
-      message: "Doctor schedule retrieved successfully",
+      message: "Doctor schedules retrieved successfully",
+      meta: result.meta,
+      data: result.data,
+    });
+  },
+);
+const getMySchedule = catchAsync(
+  async (
+    req: Request & { user?: IJwtPayload },
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const filters = pick(req.query, ["startDate", "endDate", "isBooked"]);
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+
+    const user = req.user;
+    const result = await DoctorScheduleService.getMySchedule(
+      filters,
+      options,
+      user as IJwtPayload,
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "My schedule retrieved successfully",
+      meta: result.meta,
+      data: result.data,
+    });
+  },
+);
+const deleteDoctorScheduleFromDB = catchAsync(
+  async (
+    req: Request & { user?: IJwtPayload },
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const user = req.user;
+    const { id } = req.params;
+    const result = await DoctorScheduleService.deleteDoctorSchedulesFromDB(
+      user as IJwtPayload,
+      id as string,
+    );
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "My schedule Deleted successfully",
       data: result,
     });
-  }
+  },
 );
 
 export const DoctorScheduleController = {
   createDoctorSchedule,
-  getDoctorSchedule,
+  getAllDoctorSchedulesFromDB,
+  getMySchedule,
+  deleteDoctorScheduleFromDB,
 };
